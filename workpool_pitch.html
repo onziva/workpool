@@ -197,6 +197,101 @@ html, body {
 .btn-primary:hover { filter: brightness(1.06); }
 .btn:disabled { opacity: .35; pointer-events: none; }
 
+/* ── ÉCRAN D'ACCUEIL ── */
+.cover {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--page);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5rem;
+  transition: opacity .5s ease, transform .5s ease;
+}
+.cover.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(.97);
+}
+.cover-logo {
+  font-family: var(--brand);
+  font-weight: 900;
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  letter-spacing: -.04em;
+  color: var(--text);
+  line-height: 1;
+}
+.cover-logo em {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--fraise), var(--avocat));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.cover-tagline {
+  font-family: var(--brand);
+  font-weight: 700;
+  font-size: clamp(.9rem, 2vw, 1.25rem);
+  letter-spacing: -.02em;
+  color: var(--muted);
+  text-align: center;
+}
+.cover-tagline strong {
+  color: var(--text);
+  font-weight: 900;
+}
+.cover-start {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .75rem;
+}
+.btn-start {
+  padding: 1rem 2.5rem;
+  border-radius: 9999px;
+  font-family: var(--brand);
+  font-weight: 700;
+  font-size: .85rem;
+  letter-spacing: -.01em;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--fraise), var(--avocat));
+  color: white;
+  box-shadow: 0 4px 14px rgba(184,20,46,.22);
+  transition: filter .2s ease;
+}
+.btn-start:hover { filter: brightness(1.06); }
+.hint {
+  font-size: .65rem;
+  color: var(--muted);
+  letter-spacing: .04em;
+}
+
+/* ── HINT CLAVIER (dans le pitch) ── */
+.key-hint {
+  font-size: .6rem;
+  color: var(--muted);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+}
+.key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.4rem; height: 1.4rem;
+  border-radius: .3rem;
+  border: 1px solid var(--border-2);
+  background: var(--card);
+  font-size: .65rem;
+  color: var(--text-2);
+  box-shadow: 0 1px 0 var(--border-2);
+}
+
 /* beta badge */
 .beta {
   display: inline-flex;
@@ -227,6 +322,19 @@ html, body {
 </style>
 </head>
 <body>
+
+<!-- ÉCRAN D'ACCUEIL -->
+<div class="cover" id="cover">
+  <div class="cover-logo">Work<em>pool</em></div>
+  <div class="cover-tagline">
+    <strong>Right staff, right time.</strong><br>
+    Le vivier d'emploi — pitch 3 min
+  </div>
+  <div class="cover-start">
+    <button class="btn-start" onclick="startPitch()">Démarrer le pitch →</button>
+    <span class="hint">ou appuie sur Espace / →</span>
+  </div>
+</div>
 
 <div class="deck">
 
@@ -392,12 +500,16 @@ html, body {
 
   </div>
 
-  <!-- FOOTER NAV -->
   <div class="bot">
-    <p class="note" id="note">« Des centaines de milliers de structures qui recrutent en continu — sans outil. »</p>
-    <div class="navs">
-      <button class="btn btn-ghost" id="prev" onclick="go(-1)" disabled>← Préc.</button>
-      <button class="btn btn-primary" id="next" onclick="go(1)">Suivant →</button>
+    <p class="note" id="note">« Dans l'animation, l'événementiel, l'hôtellerie — des centaines de milliers de structures recrutent en continu, sans outil dédié. »</p>
+    <div style="display:flex;align-items:center;gap:1.25rem;">
+      <div class="key-hint">
+        <span class="key">←</span><span class="key">→</span> naviguer
+      </div>
+      <div class="navs">
+        <button class="btn btn-ghost" id="prev" onclick="go(-1)" disabled>← Préc.</button>
+        <button class="btn btn-primary" id="next" onclick="go(1)">Suivant →</button>
+      </div>
     </div>
   </div>
 
@@ -411,24 +523,34 @@ const notes = [
 ];
 
 let cur = 0;
+let started = false;
+
+function startPitch() {
+  document.getElementById('cover').classList.add('hidden');
+  started = true;
+}
 
 function go(d) {
+  if (!started) { startPitch(); return; }
   const slides = document.querySelectorAll('.slide');
   slides[cur].classList.remove('active');
   slides[cur].classList.add('out');
   setTimeout(() => slides[cur].classList.remove('out'), 400);
-  cur = Math.max(0, Math.min(2, cur + d));
+  cur = Math.max(0, Math.min(slides.length - 1, cur + d));
   slides[cur].classList.add('active');
-  document.getElementById('fill').style.width = ((cur+1)/3*100).toFixed(2) + '%';
+  document.getElementById('fill').style.width = ((cur+1)/slides.length*100).toFixed(2) + '%';
   document.getElementById('ctr').textContent = '0'+(cur+1)+' / 03';
   document.getElementById('note').textContent = notes[cur];
   document.getElementById('prev').disabled = cur === 0;
-  document.getElementById('next').disabled = cur === 2;
+  document.getElementById('next').disabled = cur === slides.length - 1;
 }
 
 document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(1);
-  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   go(-1);
+  if (!started && (e.key === ' ' || e.key === 'ArrowRight' || e.key === 'Enter')) {
+    startPitch(); return;
+  }
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') go(1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')  go(-1);
 });
 </script>
 
