@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workpool — Pitch</title>
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css?family=unbounded:400,700,900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --fraise:      #b8142e;
+  --avocat:      #4a7a00;
+  --menthe:      #006f5e;
+  --fraise-bg:   #fce8eb;
+  --avocat-bg:   #eef6d8;
+  --menthe-bg:   #e0f5f0;
+  --page:        #EFEDE8;
+  --header:      #F7F6F2;
+  --card:        #ffffff;
+  --card-head:   #FAF9F6;
+  --text:        #1a0a0d;
+  --text-2:      #5a3040;
+  --muted:       #9a7080;
+  --border:      #E2DED5;
+  --border-2:    #cec9be;
+  --shadow:      0 1px 3px rgba(0,0,0,.04);
+  --shadow-md:   0 4px 12px rgba(0,0,0,.07);
+  --brand: 'Unbounded', sans-serif;
+  --body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+html, body {
+  height: 100%;
+  font-family: var(--body);
+  background: var(--page);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+/* ── LAYOUT ── */
+.deck {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── HEADER ── */
+.top {
+  background: var(--header);
+  border-bottom: 1px solid var(--border);
+  padding: .9rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.logo {
+  font-family: var(--brand);
+  font-weight: 900;
+  font-size: .9rem;
+  letter-spacing: -.03em;
+  color: var(--text);
+}
+.logo em {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--fraise), var(--avocat));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.counter {
+  font-family: var(--brand);
+  font-size: .55rem;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ── PROGRESS ── */
+.bar { height: 3px; background: var(--border); flex-shrink: 0; }
+.fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--fraise), var(--avocat));
+  border-radius: 0 9999px 9999px 0;
+  transition: width .4s ease;
+}
+
+/* ── SLIDES ── */
+.slides {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 2rem;
+  gap: 2rem;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(40px);
+  transition: opacity .35s ease, transform .35s ease;
+}
+.slide.active {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateX(0);
+}
+.slide.out {
+  opacity: 0;
+  transform: translateX(-40px);
+}
+
+/* ── PHRASE ── */
+.phrase {
+  font-family: var(--brand);
+  font-weight: 900;
+  font-size: clamp(1.25rem, 3.5vw, 2rem);
+  letter-spacing: -.03em;
+  line-height: 1.1;
+  text-align: center;
+  color: var(--text);
+  max-width: 38rem;
+}
+.phrase .g {
+  background: linear-gradient(135deg, var(--fraise), var(--avocat));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── SVG CARDS ── */
+.visual {
+  width: 100%;
+  max-width: 52rem;
+}
+
+/* ── FOOTER ── */
+.bot {
+  background: var(--header);
+  border-top: 1px solid var(--border);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+.note {
+  font-size: .7rem;
+  color: var(--muted);
+  font-style: italic;
+  max-width: 26rem;
+  line-height: 1.5;
+}
+
+.navs { display: flex; gap: .6rem; }
+
+.btn {
+  padding: .7rem 1.5rem;
+  border-radius: 9999px;
+  font-family: var(--brand);
+  font-weight: 700;
+  font-size: .7rem;
+  letter-spacing: -.01em;
+  border: none;
+  cursor: pointer;
+  transition: all .2s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border-2);
+}
+.btn-ghost:hover { background: var(--page); color: var(--text-2); }
+.btn-primary {
+  background: linear-gradient(135deg, var(--fraise), var(--avocat));
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(184,20,46,.22);
+}
+.btn-primary:hover { filter: brightness(1.06); }
+.btn:disabled { opacity: .35; pointer-events: none; }
+
+/* ── ÉCRAN D'ACCUEIL ── */
+.cover {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--page);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5rem;
+  transition: opacity .5s ease, transform .5s ease;
+}
+.cover.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(.97);
+}
+.cover-logo {
+  font-family: var(--brand);
+  font-weight: 900;
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  letter-spacing: -.04em;
+  color: var(--text);
+  line-height: 1;
+}
+.cover-logo em {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--fraise), var(--avocat));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.cover-tagline {
+  font-family: var(--brand);
+  font-weight: 700;
+  font-size: clamp(.9rem, 2vw, 1.25rem);
+  letter-spacing: -.02em;
+  color: var(--muted);
+  text-align: center;
+}
+.cover-tagline strong {
+  color: var(--text);
+  font-weight: 900;
+}
+.cover-start {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .75rem;
+}
+.btn-start {
+  padding: 1rem 2.5rem;
+  border-radius: 9999px;
+  font-family: var(--brand);
+  font-weight: 700;
+  font-size: .85rem;
+  letter-spacing: -.01em;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--fraise), var(--avocat));
+  color: white;
+  box-shadow: 0 4px 14px rgba(184,20,46,.22);
+  transition: filter .2s ease;
+}
+.btn-start:hover { filter: brightness(1.06); }
+.hint {
+  font-size: .65rem;
+  color: var(--muted);
+  letter-spacing: .04em;
+}
+
+/* ── HINT CLAVIER (dans le pitch) ── */
+.key-hint {
+  font-size: .6rem;
+  color: var(--muted);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+}
+.key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.4rem; height: 1.4rem;
+  border-radius: .3rem;
+  border: 1px solid var(--border-2);
+  background: var(--card);
+  font-size: .65rem;
+  color: var(--text-2);
+  box-shadow: 0 1px 0 var(--border-2);
+}
+
+/* beta badge */
+.beta {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  font-family: var(--brand);
+  font-size: .55rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: .3rem .8rem;
+  border-radius: 9999px;
+  background: var(--avocat-bg);
+  color: var(--avocat);
+  border: 1px solid rgba(74,122,0,.2);
+}
+.beta::before {
+  content: '';
+  width: .45rem; height: .45rem;
+  border-radius: 50%;
+  background: var(--avocat);
+  animation: pulse 1.6s ease infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity:1; transform:scale(1); }
+  50%      { opacity:.5; transform:scale(.8); }
+}
+</style>
+</head>
+<body>
+
+<!-- ÉCRAN D'ACCUEIL -->
+<div class="cover" id="cover">
+  <div class="cover-logo">Work<em>pool</em></div>
+  <div class="cover-tagline">
+    <strong>Right staff, right time.</strong><br>
+    Le vivier d'emploi — pitch 3 min
+  </div>
+  <div class="cover-start">
+    <button class="btn-start" onclick="startPitch()">Démarrer le pitch →</button>
+    <span class="hint">ou appuie sur Espace / →</span>
+  </div>
+</div>
+
+<div class="deck">
+
+  <!-- HEADER -->
+  <div class="top">
+    <div class="logo">Work<em>pool</em></div>
+    <div style="display:flex;align-items:center;gap:1rem;">
+      <div class="beta">Beta dans 1 mois</div>
+      <div class="counter" id="ctr">01 / 03</div>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="bar"><div class="fill" id="fill" style="width:33.33%"></div></div>
+
+  <!-- SLIDES -->
+  <div class="slides">
+
+    <!-- SLIDE 1 — TARGET -->
+    <div class="slide active" id="s0">
+      <svg class="visual" viewBox="0 0 680 260" xmlns="http://www.w3.org/2000/svg">
+        <rect width="680" height="260" rx="20" fill="#ffffff" stroke="#E2DED5" stroke-width="1"/>
+        <rect width="680" height="52" rx="20" fill="#FAF9F6"/>
+        <rect y="32" width="680" height="20" fill="#FAF9F6"/>
+        <line x1="0" y1="52" x2="680" y2="52" stroke="#E2DED5" stroke-width="1"/>
+        <line x1="227" y1="0" x2="227" y2="260" stroke="#E2DED5" stroke-width="1"/>
+        <line x1="453" y1="0" x2="453" y2="260" stroke="#E2DED5" stroke-width="1"/>
+
+        <text x="113" y="33" font-family="'Unbounded',sans-serif" font-weight="700" font-size="10" fill="#9a7080" text-anchor="middle" letter-spacing="2">SECTEURS</text>
+        <text x="340" y="33" font-family="'Unbounded',sans-serif" font-weight="700" font-size="10" fill="#9a7080" text-anchor="middle" letter-spacing="2">STRUCTURES</text>
+        <text x="567" y="33" font-family="'Unbounded',sans-serif" font-weight="700" font-size="10" fill="#9a7080" text-anchor="middle" letter-spacing="2">CONTRAT TYPE</text>
+
+        <text x="113" y="118" font-size="52" text-anchor="middle">🎭</text>
+        <text x="113" y="172" font-family="'Unbounded',sans-serif" font-weight="700" font-size="13" fill="#1a0a0d" text-anchor="middle">Animation</text>
+        <text x="113" y="192" font-family="sans-serif" font-size="12" fill="#9a7080" text-anchor="middle">Événementiel</text>
+        <text x="113" y="210" font-family="sans-serif" font-size="12" fill="#9a7080" text-anchor="middle">Hôtellerie</text>
+
+        <text x="340" y="118" font-family="'Unbounded',sans-serif" font-weight="900" font-size="56" fill="#b8142e" text-anchor="middle">450k+</text>
+        <text x="340" y="162" font-family="sans-serif" font-size="13" fill="#5a3040" text-anchor="middle">structures en France</text>
+        <text x="340" y="182" font-family="sans-serif" font-size="11" fill="#9a7080" text-anchor="middle">sans outil de planification RH</text>
+
+        <rect x="487" y="76" width="160" height="38" rx="19" fill="#fce8eb" stroke="rgba(184,20,46,.2)" stroke-width="1"/>
+        <text x="567" y="100" font-family="'Unbounded',sans-serif" font-weight="700" font-size="12" fill="#b8142e" text-anchor="middle">CDD court</text>
+        <rect x="487" y="126" width="160" height="38" rx="19" fill="#eef6d8" stroke="rgba(74,122,0,.2)" stroke-width="1"/>
+        <text x="567" y="150" font-family="'Unbounded',sans-serif" font-weight="700" font-size="12" fill="#4a7a00" text-anchor="middle">Recrutement continu</text>
+        <rect x="487" y="176" width="160" height="38" rx="19" fill="#e0f5f0" stroke="rgba(0,111,94,.2)" stroke-width="1"/>
+        <text x="567" y="200" font-family="'Unbounded',sans-serif" font-weight="700" font-size="12" fill="#006f5e" text-anchor="middle">Besoin ponctuel</text>
+      </svg>
+
+      <p class="phrase">Des centaines de milliers de structures<br>qui recrutent <span class="g">en continu — sans outil.</span></p>
+    </div>
+
+    <!-- SLIDE 2 — PAIN -->
+    <div class="slide" id="s1">
+      <svg class="visual" viewBox="0 0 680 260" xmlns="http://www.w3.org/2000/svg">
+        <rect width="680" height="260" rx="20" fill="#ffffff" stroke="#E2DED5" stroke-width="1"/>
+        <rect width="680" height="52" rx="20" fill="#FAF9F6"/>
+        <rect y="32" width="680" height="20" fill="#FAF9F6"/>
+        <line x1="0" y1="52" x2="680" y2="52" stroke="#E2DED5" stroke-width="1"/>
+        <line x1="340" y1="0" x2="340" y2="260" stroke="#E2DED5" stroke-width="1"/>
+
+        <text x="170" y="33" font-family="'Unbounded',sans-serif" font-weight="700" font-size="10" fill="#9a7080" text-anchor="middle" letter-spacing="2">AUJOURD'HUI</text>
+        <text x="510" y="33" font-family="'Unbounded',sans-serif" font-weight="700" font-size="10" fill="#9a7080" text-anchor="middle" letter-spacing="2">RÉSULTAT</text>
+
+        <!-- gauche -->
+        <rect x="28" y="70" width="280" height="48" rx="12" fill="#FAF9F6" stroke="#E2DED5" stroke-width="1"/>
+        <text x="52" y="100" font-size="22" text-anchor="middle">📅</text>
+        <text x="80" y="90" font-family="sans-serif" font-size="12" font-weight="600" fill="#1a0a0d">Manager</text>
+        <text x="80" y="108" font-family="sans-serif" font-size="11" fill="#9a7080">Besoin de 3 renforts le 28 nov.</text>
+
+        <line x1="168" y1="118" x2="168" y2="140" stroke="#E2DED5" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="168" y="138" font-size="14" text-anchor="middle" fill="#9a7080">↓</text>
+
+        <rect x="28" y="142" width="280" height="48" rx="12" fill="#fce8eb" stroke="rgba(184,20,46,.3)" stroke-width="1"/>
+        <text x="52" y="172" font-size="22" text-anchor="middle">💬</text>
+        <text x="80" y="162" font-family="sans-serif" font-size="12" font-weight="600" fill="#b8142e">WhatsApp groupé</text>
+        <text x="80" y="180" font-family="sans-serif" font-size="11" fill="#9a7080">ou agence intérim à 20%</text>
+
+        <line x1="168" y1="190" x2="168" y2="210" stroke="#E2DED5" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="168" y="208" font-size="14" text-anchor="middle" fill="#9a7080">↓</text>
+
+        <rect x="28" y="212" width="280" height="38" rx="12" fill="#FAF9F6" stroke="#E2DED5" stroke-width="1"/>
+        <text x="52" y="236" font-size="20" text-anchor="middle">👤</text>
+        <text x="78" y="230" font-family="sans-serif" font-size="11" fill="#9a7080">Candidats disponibles</text>
+        <text x="78" y="244" font-family="sans-serif" font-size="11" fill="#9a7080">— mais invisibles</text>
+
+        <!-- droite -->
+        <rect x="364" y="70" width="292" height="80" rx="14" fill="#fce8eb" stroke="rgba(184,20,46,.15)" stroke-width="1"/>
+        <text x="390" y="112" font-family="'Unbounded',sans-serif" font-weight="900" font-size="36" fill="#b8142e">48h</text>
+        <text x="390" y="136" font-family="sans-serif" font-size="11" fill="#5a3040">de délai moyen pour un renfort</text>
+
+        <rect x="364" y="162" width="292" height="80" rx="14" fill="#fce8eb" stroke="rgba(184,20,46,.15)" stroke-width="1"/>
+        <text x="390" y="204" font-family="'Unbounded',sans-serif" font-weight="900" font-size="36" fill="#b8142e">20%</text>
+        <text x="390" y="228" font-family="sans-serif" font-size="11" fill="#5a3040">de marge agence pour 1 journée</text>
+      </svg>
+
+      <p class="phrase">Le manager sait quand il a besoin de renforts.<br><span class="g">Personne ne connecte les deux bouts.</span></p>
+    </div>
+
+    <!-- SLIDE 3 — SOLUTION -->
+    <div class="slide" id="s2">
+      <svg class="visual" viewBox="0 0 680 300" xmlns="http://www.w3.org/2000/svg">
+        <rect width="680" height="300" rx="20" fill="#ffffff" stroke="#E2DED5" stroke-width="1"/>
+        <rect width="680" height="52" rx="20" fill="#FAF9F6"/>
+        <rect y="32" width="680" height="20" fill="#FAF9F6"/>
+        <line x1="0" y1="52" x2="680" y2="52" stroke="#E2DED5" stroke-width="1"/>
+        <line x1="227" y1="0" x2="227" y2="240" stroke="#E2DED5" stroke-width="1"/>
+        <line x1="453" y1="0" x2="453" y2="240" stroke="#E2DED5" stroke-width="1"/>
+
+        <!-- col headers -->
+        <text x="113" y="34" font-family="'Unbounded',sans-serif" font-weight="700" font-size="10" fill="#9a7080" text-anchor="middle" letter-spacing="2">MANAGER</text>
+        <text x="340" y="34" font-family="'Unbounded',sans-serif" font-weight="700" font-size="10" fill="#9a7080" text-anchor="middle" letter-spacing="2">WORKPOOL</text>
+        <text x="567" y="34" font-family="'Unbounded',sans-serif" font-weight="700" font-size="10" fill="#9a7080" text-anchor="middle" letter-spacing="2">CANDIDAT</text>
+
+        <!-- MANAGER -->
+        <text x="113" y="122" font-size="44" text-anchor="middle">📅</text>
+        <text x="113" y="168" font-family="sans-serif" font-size="12" fill="#5a3040" text-anchor="middle">Pose ses besoins</text>
+        <text x="113" y="185" font-family="sans-serif" font-size="11" fill="#9a7080" text-anchor="middle">sur un calendrier</text>
+        <rect x="45" y="198" width="136" height="28" rx="14" fill="#fce8eb" stroke="rgba(184,20,46,.2)" stroke-width="1"/>
+        <text x="113" y="217" font-family="'Unbounded',sans-serif" font-weight="700" font-size="10" fill="#b8142e" text-anchor="middle">Dates + volume</text>
+
+        <!-- gradient def -->
+        <defs>
+          <linearGradient id="ag" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#b8142e"/>
+            <stop offset="100%" stop-color="#4a7a00"/>
+          </linearGradient>
+        </defs>
+
+        <!-- arrows -->
+        <line x1="242" y1="140" x2="300" y2="140" stroke="url(#ag)" stroke-width="2"/>
+        <polygon points="300,135 312,140 300,145" fill="#4a7a00"/>
+        <line x1="368" y1="140" x2="426" y2="140" stroke="url(#ag)" stroke-width="2"/>
+        <polygon points="426,135 438,140 426,145" fill="#4a7a00"/>
+
+        <!-- CENTER -->
+        <circle cx="340" cy="140" r="46" fill="url(#ag)" opacity=".07"/>
+        <circle cx="340" cy="140" r="32" fill="url(#ag)" opacity=".1"/>
+        <text x="340" y="132" font-size="32" text-anchor="middle">⚡</text>
+        <text x="340" y="172" font-family="'Unbounded',sans-serif" font-weight="900" font-size="11" fill="#b8142e" text-anchor="middle">Matching</text>
+        <text x="340" y="188" font-family="sans-serif" font-size="10" fill="#9a7080" text-anchor="middle">date × profil × dispo</text>
+
+        <!-- CANDIDAT -->
+        <text x="567" y="122" font-size="44" text-anchor="middle">👤</text>
+        <text x="567" y="168" font-family="sans-serif" font-size="12" fill="#5a3040" text-anchor="middle">Déclare ses dispos</text>
+        <text x="567" y="185" font-family="sans-serif" font-size="11" fill="#9a7080" text-anchor="middle">Reçoit une proposition</text>
+        <rect x="499" y="198" width="136" height="28" rx="14" fill="#eef6d8" stroke="rgba(74,122,0,.2)" stroke-width="1"/>
+        <text x="567" y="217" font-family="'Unbounded',sans-serif" font-weight="700" font-size="10" fill="#4a7a00" text-anchor="middle">Contact direct</text>
+
+        <!-- SÉPARATEUR -->
+        <line x1="20" y1="244" x2="660" y2="244" stroke="#E2DED5" stroke-width="1"/>
+
+        <!-- CONTRAINTE SOUVERAINETÉ -->
+        <rect x="20" y="254" width="640" height="34" rx="12" fill="#e0f5f0" stroke="rgba(0,111,94,.25)" stroke-width="1"/>
+        <!-- icone bouclier -->
+        <text x="46" y="276" font-size="16" text-anchor="middle">🛡</text>
+        <text x="66" y="271" font-family="'Unbounded',sans-serif" font-weight="900" font-size="9.5" fill="#006f5e" letter-spacing=".04em">CONTRAINTE PROJET</text>
+        <text x="66" y="283" font-family="sans-serif" font-size="10.5" fill="#006f5e">Zéro GAFAM — stack 100% souveraine · Rails · Vue 3 · Hébergement EU · Données en France</text>
+      </svg>
+
+      <p class="phrase">Un calendrier. Des dispos.<br><span class="g">Workpool fait le match.</span></p>
+    </div>
+
+  </div>
+
+  <div class="bot">
+    <p class="note" id="note">« Dans l'animation, l'événementiel, l'hôtellerie — des centaines de milliers de structures recrutent en continu, sans outil dédié. »</p>
+    <div style="display:flex;align-items:center;gap:1.25rem;">
+      <div class="key-hint">
+        <span class="key">←</span><span class="key">→</span> naviguer
+      </div>
+      <div class="navs">
+        <button class="btn btn-ghost" id="prev" onclick="go(-1)" disabled>← Préc.</button>
+        <button class="btn btn-primary" id="next" onclick="go(1)">Suivant →</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const notes = [
+  "« Dans l'animation, l'événementiel, l'hôtellerie — des centaines de milliers de structures recrutent en continu, sans outil dédié. »",
+  "« Le manager sait le 15 qu'il a besoin de renforts le 28. Il envoie un WhatsApp ou appelle une agence à 20% de marge. Les candidats disponibles existent — personne ne les connecte. »",
+  "« Workpool : le manager pose ses besoins sur un calendrier, les candidats déclarent leurs dispos, l'app fait le match. Rails + Vue 3. Beta dans 1 mois. On en parle ? »"
+];
+
+let cur = 0;
+let started = false;
+
+function startPitch() {
+  document.getElementById('cover').classList.add('hidden');
+  started = true;
+}
+
+function go(d) {
+  if (!started) { startPitch(); return; }
+  const slides = document.querySelectorAll('.slide');
+  slides[cur].classList.remove('active');
+  slides[cur].classList.add('out');
+  setTimeout(() => slides[cur].classList.remove('out'), 400);
+  cur = Math.max(0, Math.min(slides.length - 1, cur + d));
+  slides[cur].classList.add('active');
+  document.getElementById('fill').style.width = ((cur+1)/slides.length*100).toFixed(2) + '%';
+  document.getElementById('ctr').textContent = '0'+(cur+1)+' / 03';
+  document.getElementById('note').textContent = notes[cur];
+  document.getElementById('prev').disabled = cur === 0;
+  document.getElementById('next').disabled = cur === slides.length - 1;
+}
+
+document.addEventListener('keydown', e => {
+  if (!started && (e.key === ' ' || e.key === 'ArrowRight' || e.key === 'Enter')) {
+    startPitch(); return;
+  }
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') go(1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')  go(-1);
+});
+</script>
+
+</body>
+</html>
